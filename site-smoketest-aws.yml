@@ -7,7 +7,8 @@
       return_content: yes
       status_code: 200
     register: webpage
-
+        
+  - debug: var=webpage
   - name: Fail if 'Ansible has done its job' is not in the page content
     fail:
     when: "'Ansible has done its job' not in webpage.results[0].content"
