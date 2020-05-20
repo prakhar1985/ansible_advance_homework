@@ -1,0 +1,10 @@
+export OSP_GUID=6ed5
+export OPENTLC_LOGIN=psrivast-redhat.com
+export OSP_DOMAIN=green.osp.opentlc.com
+export TOWER_GUID=ttower01
+export OPENTLC_PASSWORD=Kirtisonu3985
+export GITHUB_REPO=https://github.com/prakhar1985/ansible_advance_homework.git
+export JQ_REPO_BASE=http://www.opentlc.com/download/ansible_bootcamp
+export REGION=us-east-1
+export RH_MAIL_ID=psrivast@redhat.com
+
