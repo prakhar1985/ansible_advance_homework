@@ -7,4 +7,4 @@ export GITHUB_REPO=https://github.com/prakhar1985/ansible_advance_homework.git
 export JQ_REPO_BASE=http://www.opentlc.com/download/ansible_bootcamp
 export REGION=us-east-1
 export RH_MAIL_ID=psrivast@redhat.com
-
+export THREE_TIER_GUID=7063
