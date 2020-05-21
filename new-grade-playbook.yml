@@ -29,7 +29,14 @@
     register: qa_webpage
     ignore_errors: yes
 
-  - debug: var=qa_webpage
+ 
+  - debug: 
+      msg: 
+    when: 
+      - 'item.skipped != true' 
+      - '"Ansible" in item.content'
+    loop: "{{ qa_webpage.results }}"
+
   - name: Fail
     fail:
     when: "'Ansible' not in qa_webpage.results[0].content" 
