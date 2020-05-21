@@ -5,13 +5,13 @@
     ANSIBLE_ADVANCE_GUID: 2eab
     OSP_GUID: b3ca
     OSP_DOMAIN: green.osp.opentlc.com
+    OPENTLC_ID: cloud-user
   tasks:
   - name: Create In-memory Inventory
     add_host: 
       name: workstation-{{ OSP_GUID }}.{{ OSP_DOMAIN }}
       group: workstation
       ansible_user: "{{ OPENTLC_ID }}"
-      ansible_ssh_user: cloud-user
  
 
   - name: OpenStack servers
