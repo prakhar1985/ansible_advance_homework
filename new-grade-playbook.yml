@@ -39,7 +39,10 @@
 
   - name: Fail
     fail:
-    when: "'Ansible' not in qa_webpage.results[0].content" 
+    when: 
+      - 'item.skipped | d(false) != true' 
+      - '"Ansible" in item.content'
+    loop: "{{ qa_webpage.results }}"
 
   
 - hosts: localhost
