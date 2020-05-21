@@ -3,8 +3,6 @@
   - job_template: "{{job_template_aws_provision}}"
     success:
     - inventory_source: "{{ec2_inventory_source}}"
-      success:
-      - job_template: "{{job_template_aws_status_check}}"
   - job_template: "{{job_template_name_osp_instances}}"
     success:
     - job_template: "{{job_template_name_3tier_app}}"
@@ -15,11 +13,13 @@
         success:
         - inventory_source: "{{ec2_inventory_source}}"
           success:
-          - job_template: "{{job_template_aws_ssh_keys}}"
+          - job_template: "{{job_template_aws_status_check}}"
             success:
-            - job_template: "{{job_template_name_3tier_app_aws}}"
+            - job_template: "{{job_template_aws_ssh_keys}}"
               success:
-              - job_template: "{{job_template_smoke_aws}}"
+              - job_template: "{{job_template_name_3tier_app_aws}}"
+                success:
+                - job_template: "{{job_template_smoke_aws}}"
              
 
 

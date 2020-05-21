@@ -1,18 +1,5 @@
-- hosts: localhost
-  gather_facts: false
-  vars:
-    OSP_GUID: "{{ lookup('env','OSP_GUID') }}"
-    OSP_DOMAIN: "{{ lookup('env','OSP_DOMAIN') }}"
-    TOWER_GUID: "{{ lookup('env','TOWER_GUID') }}"
-  tasks:
-  - name: Create In-memory Inventory
-    add_host: 
-      name: workstation-{{ OSP_GUID }}.{{ OSP_DOMAIN }}
-      group: workstation
-      ansible_ssh_private_key_file: ~/.ssh/openstack.pem
-      ansible_ssh_user: cloud-user
- 
-- hosts: workstation
+- name: Play to grade QA
+  hosts: workstation
   gather_facts: false
   tasks:
   - name: OpenStack servers
@@ -26,6 +13,7 @@
     register: osp_instance
 
   - debug: var=osp_instance
+
 
 
   - name: Access website
