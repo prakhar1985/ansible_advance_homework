@@ -55,6 +55,8 @@
   
 - hosts: localhost
   gather_facts: false
+  vars:
+    ANSIBLE_ADVANCE_GUID: 2eab
   tasks:
   - name: Access website
     uri:
