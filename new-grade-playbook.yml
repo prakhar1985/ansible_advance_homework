@@ -1,13 +1,12 @@
 - hosts: localhost
   gather_facts: false
   vars:
-    QA_GUID: "{{ lookup('env','QA_GUID') }}"
-    QA_DOMAIN: "{{ lookup('env','QA_DOMAIN') }}"
-    OPENTLC_ID: "{{ lookup('env','OPENTLC_ID') }}"
+    OSP_GUID: "{{ lookup('env','OSP_GUID') }}"
+    OSP_DOMAIN: "{{ lookup('env','OSP_DOMAIN') }}"
   tasks:
   - name: Create In-memory Inventory
     add_host: 
-      name: workstation-{{ QA_GUID }}.{{ QA_DOMAIN }}
+      name: workstation-{{ OSP_GUID }}.{{ OSP_DOMAIN }}
       group: workstation
       ansible_user: "cloud-user"
       ansible_ssh_private_key_file: ~/.ssh/openstack.pem
