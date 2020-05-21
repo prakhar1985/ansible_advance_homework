@@ -33,7 +33,7 @@
   - debug: 
       msg: "{{ item.content }}"
     when: 
-      - 'item.skipped | d(true) != true' 
+      - 'item.skipped | d(false) != true' 
       - '"Ansible" in item.content'
     loop: "{{ qa_webpage.results }}"
 
