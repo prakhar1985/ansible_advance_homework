@@ -41,7 +41,7 @@
     fail:
     when: 
       - 'item.skipped | d(false) != true' 
-      - '"Ansible" in item.content'
+      - '"Ansible" not in item.content'
     loop: "{{ qa_webpage.results }}"
 
   
