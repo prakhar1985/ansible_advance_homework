@@ -9,7 +9,8 @@
     register: openstack_info
   
   - name: Check if all osp instance exist
-    debug: "{{ openstack_info.openstack_servers | length }}"
+    debug: 
+      msg: "{{ openstack_info.openstack_servers | length }}"
     register: osp_instance
 
   - debug: var=osp_instance
