@@ -1,74 +1,125 @@
-- name: Play to grade QA
-  hosts: workstation
+- hosts: localhost
   gather_facts: false
   vars:
-    ANSIBLE_ADVANCE_GUID: 2eab
-    OSP_GUID: b3ca
-    OSP_DOMAIN: green.osp.opentlc.com
-    OPENTLC_ID: cloud-user
+    QA_GUID: "{{ lookup('env','QA_GUID') }}"
+    QA_DOMAIN: "{{ lookup('env','QA_DOMAIN') }}"
+    OPENTLC_ID: "{{ lookup('env','OPENTLC_ID') }}"
   tasks:
   - name: Create In-memory Inventory
     add_host: 
-      name: workstation-{{ OSP_GUID }}.{{ OSP_DOMAIN }}
+      name: workstation-{{ QA_GUID }}.{{ QA_DOMAIN }}
       group: workstation
-      ansible_user: "{{ OPENTLC_ID }}"
- 
+      ansible_user: "cloud-user"
+      ansible_ssh_private_key_file: ~/.ssh/openstack.pem
 
+- hosts: workstation
+  gather_facts: false
+  tasks:
   - name: OpenStack servers
     os_server_info:
       cloud: openstack
       server: '*'
     register: openstack_info
   
-  - debug: var=openstack_info
-  
-  - name: Check if all osp instance exist
-    debug: 
-      msg: "{{ openstack_info.openstack_servers | length }}"
-    register: osp_instance
+  - name: Export Instance Pass
+    copy:
+      content: "Four QA Instance exist \t.......... Pass\n"
+      dest: ~/grade_result.txt
+    when:  openstack_info.openstack_servers | length == 4
+    delegate_to: localhost
 
-  - debug: var=osp_instance
+  - name: Export Instance Fail
+    copy:
+      content: "Four QA instance exist \t.......... Fail\n"
+      dest: ~/grade_result.txt
+    when:  openstack_info.openstack_servers | length != 4
+    delegate_to: localhost
 
-  - name: Access website
+
+- hosts: workstation
+  gather_facts: false
+  tasks:
+  - name: OpenStack servers
+    os_server_info:
+      cloud: openstack
+      server: 'frontend'
+    register: frontend_info
+   
+  - name: Export frontend Pass
+    lineinfile:
+      line: "QA frontend exist \t.......... Pass"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when:  frontend_info.openstack_servers | length == 1
+    delegate_to: localhost
+
+  - name: Export frontend fail
+    lineinfile:
+      line: "QA frontend exist \t.......... Fail"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when:  frontend_info.openstack_servers | length != 1
+    delegate_to: localhost
+
+  - name: Access frontend website
     uri:
-      url: "http://{{ item.public_v4 }}"
+      url: "http://{{ frontend_info.openstack_servers.0.public_v4 }}"
       status_code: 200
       return_content: yes
-    when: 'item.hostname == "frontend"'
-    loop: "{{ openstack_info.openstack_servers }}"
-    register: qa_webpage
+    register: osp_frontend_page
     ignore_errors: yes
 
-  - debug: 
-      msg: "{{ item.content }}"
-    when: 
-      - 'item.skipped | d(false) != true' 
-      - '"Ansible" in item.content'
-    loop: "{{ qa_webpage.results }}"
+  - name: Export frontend webpage Pass
+    lineinfile:
+      line: "QA frontend webpage exist \t.......... Pass"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when: '"Ansible has done its job" in osp_frontend_page.content'
+    delegate_to: localhost
 
-  - name: Fail
-    fail:
-    when: 
-      - 'item.skipped | d(false) != true' 
-      - '"Ansible" not in item.content'
-    loop: "{{ qa_webpage.results }}"
-  
+  - name: Export frontend webpage fail
+    lineinfile:
+      line: "QA frontend webpage exist \t.......... Fail"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when: '"Ansible has done its job" not in osp_frontend_page.content'
+    delegate_to: localhost
+
+
 - hosts: localhost
   gather_facts: false
   vars:
-    ANSIBLE_ADVANCE_GUID: 2eab
+    THREE_TIER_GUID: "{{ lookup('env','THREE_TIER_GUID') }}"
   tasks:
   - name: Access website
     uri:
-      url: "http://frontend1.{{ ANSIBLE_ADVANCE_GUID }}.example.opentlc.com"
+      url: "http://frontend1.{{ THREE_TIER_GUID }}.example.opentlc.com"
       status_code: 200
       return_content: yes
-    register: prod_webpage
+    register: prod_frontend_page
 
+  - name: Export frontend webpage Pass
+    lineinfile:
+      line: "Prod frontend webpage exist \t.......... Pass"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when: '"Ansible has done its job" in prod_frontend_page.content'
+    delegate_to: localhost
 
-  - name: Fail
-    fail:
-    when: "'Ansible' not in prod_webpage.content" 
+  - name: Export frontend webpage fail
+    lineinfile:
+      line: "Prod frontend webpage exist \t.......... Fail"
+      path: ~/grade_result.txt
+      state: present
+      insertafter: EOF
+    when: '"Ansible has done its job" not in prod_frontend_page.content'
+    delegate_to: localhost
+
 
   - name: Success
     debug: msg="Congrats Yours HW Assignment is completed"
