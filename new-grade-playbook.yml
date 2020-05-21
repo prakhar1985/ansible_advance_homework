@@ -25,10 +25,11 @@
       status_code: 200
       return_content: yes
     when: 'item.hostname == "frontend"'
-    loop: "{{ openstack_info.openstack_servers }}"
+    loop: "{{ openstack_info.results.openstack_servers }}"
     register: qa_webpage
     ignore_errors: yes
 
+  - debug: var=qa_webpage
   - name: Fail
     fail:
     when: "'Ansible' not in qa_webpage.results[0].content" 
