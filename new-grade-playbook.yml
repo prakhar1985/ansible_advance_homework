@@ -1,7 +1,19 @@
 - name: Play to grade QA
   hosts: workstation
   gather_facts: false
+  vars:
+    ANSIBLE_ADVANCE_GUID: 2eab
+    OSP_GUID: b3ca
+    OSP_DOMAIN: green.osp.opentlc.com
   tasks:
+  - name: Create In-memory Inventory
+    add_host: 
+      name: workstation-{{ OSP_GUID }}.{{ OSP_DOMAIN }}
+      group: workstation
+      ansible_user: "{{ OPENTLC_ID }}"
+      ansible_ssh_user: cloud-user
+ 
+
   - name: OpenStack servers
     os_server_info:
       cloud: openstack
@@ -17,8 +29,6 @@
 
   - debug: var=osp_instance
 
-
-
   - name: Access website
     uri:
       url: "http://{{ item.public_v4 }}"
@@ -29,7 +39,6 @@
     register: qa_webpage
     ignore_errors: yes
 
- 
   - debug: 
       msg: "{{ item.content }}"
     when: 
@@ -43,11 +52,8 @@
       - 'item.skipped | d(false) != true' 
       - '"Ansible" not in item.content'
     loop: "{{ qa_webpage.results }}"
-
   
 - hosts: localhost
-  vars:
-    ANSIBLE_ADVANCE_GUID: "{{ lookup('env','THREE_TIER_GUID') }}"
   gather_facts: false
   tasks:
   - name: Access website
